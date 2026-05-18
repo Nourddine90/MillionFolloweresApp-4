@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Nourddine Abatal - نظام التبادل الحقيقي للمتابعات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #0b1120, #111827);
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        .app-container {
+            max-width: 1300px;
+            margin: auto;
+        }
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .rights {
+            font-size: 0.75rem;
+            background: #1e293b;
+            padding: 5px 15px;
+            border-radius: 80px;
+        }
+        .lang-switch button {
+            background: #334155;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            margin: 0 3px;
+            cursor: pointer;
+            color: white;
+        }
+        .lang-switch .active {
+            background: #f97316;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 32px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #2d3a5e;
+        }
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #facc15;
+        }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            background: #1e293b;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #f97316;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            background: #0f172a80;
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 28px;
+            background: #020617;
+            border: 1px solid #334155;
+            color: white;
+        }
+        button {
+            background: #f97316;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-paypal { background: #0070ba; }
+        .btn-support { background: #6b21a5; }
+        .user-card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 4px solid #facc15;
+        }
+        .banned-card {
+            border-right-color: #ef4444;
+            opacity: 0.7;
+            background: #2d1a1a;
+        }
+        .verify-box {
+            background: #00000070;
+            padding: 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+        }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div><h2>Nourddine Abatal</h2><small>نظام التبادل الحقيقي</small></div>
+        <div class="rights">© 2025 Nourddine Abatal - كل الحقوق محفوظة</div>
+        <div class="lang-switch" id="langSwitcher">
+            <button data-lang="ar" class="active">عربي</button>
+            <button data-lang="fr">FR</button>
+            <button data-lang="es">ES</button>
+            <button data-lang="en">EN</button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="totalMembers">0</div><div>مشارك حقيقي</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalViews">0</div><div>مشاهدة محققة</div></div>
+        <div class="stat-card"><div class="stat-number" id="bannedCount">0</div><div>روابط محظورة</div></div>
+    </div>
+
+    <div class="tabs">
+        <button data-tab="tab1" class="tab-btn active">➕ إضافة رابطك</button>
+        <button data-tab="tab2" class="tab-btn">🌐 روابط نشطة</button>
+        <button data-tab="tab3" class="tab-btn">⚠️ المحظورون</button>
+        <button data-tab="tab4" class="tab-btn">📋 متابعاتي</button>
+    </div>
+
+    <div id="tab1" class="tab-content active">
+        <h3>أضف قناتك أو صفحتك (يوتيوب، تيك توك، انستقرام، فيسبوك، موقع)</h3>
+        <input type="url" id="userUrl" placeholder="https://youtube.com/@user أو https://facebook.com/page">
+        <input type="text" id="userName" placeholder="اسم قناتك أو صفحتك">
+        <select id="platformSelect">
+            <option value="youtube">YouTube</option>
+            <option value="tiktok">TikTok</option>
+            <option value="instagram">Instagram</option>
+            <option value="facebook">Facebook</option>
+            <option value="website">موقع شخصي</option>
+        </select>
+        <button id="addLinkBtn">🚀 تسجيل والمطالبة بالمتابعات</button>
+        <p style="font-size:13px; margin-top:12px;">⚠️ بعد التسجيل، سيطلب منك متابعة 5 حسابات خلال 10 دقائق. في حال عدم الالتزام، سيتم حظر رابطك تلقائيًا.</p>
+    </div>
+
+    <div id="tab2" class="tab-content">
+        <h3>روابط نشطة (يمكنك متابعتها لكسب النقاط)</h3>
+        <div id="activeLinksContainer">جاري التحميل...</div>
+    </div>
+
+    <div id="tab3" class="tab-content">
+        <h3>روابط محظورة بسبب عدم الامتثال</h3>
+        <div id="bannedLinksContainer"></div>
+    </div>
+
+    <div id="tab4" class="tab-content">
+        <h3>مهام المتابعة المطلوبة منك</h3>
+        <div id="myTasksContainer"></div>
+        <button id="checkVerificationBtn" style="background:#16a34a;">✅ تحقق مما إذا أنجزت المتابعات</button>
+    </div>
+
+    <div class="footer">
+        <button id="paypalBtn" class="btn-paypal">💰 اشتراك PayPal (5$)</button>
+        <button id="koFiBtn" class="btn-support">☕ دعم Ko-fi</button>
+        <button id="whatsappBtn" class="btn-support">📱 واتساب المطور</button>
+        <p>النظام حقيقي: كل رابط يجب أن يتابع 5 آخرين ليصبح نشطًا. في حال عدم الالتزام -> حظر نهائي.</p>
+    </div>
+</div>
+
+<script>
+    // -------------------- حقوق التطبيق --------------------
+    console.log("© Nourddine Abatal - نظام التبادل الحقيقي للمتابعات");
+
+    // -------------------- هيكل البيانات --------------------
+    let users = [];      // { id, name, url, platform, status: 'pending' or 'active' or 'banned', followTasks: [], followedBy: [], createdAt, bannedReason }
+    let currentUserId = null;  // المستخدم الحالي (محاكاة، في الحقيقة نستخدم localStorage)
+    
+    // تحميل بيانات تجريبية
+    function loadData() {
+        const stored = localStorage.getItem("real_follow_system");
+        if(stored) {
+            users = JSON.parse(stored);
+        } else {
+            // بيانات افتراضية
+            users = [];
+        }
+        if(users.length === 0) {
+            // مستخدم تجريبي للعرض
+            users.push({
+                id: "user1",
+                name: "Bni Mskin Business",
+                url: "https://www.facebook.com/BniMskinBusines",
+                platform: "facebook",
+                status: "active",
+                followTasks: [],
+                followedBy: [],
+                createdAt: Date.now(),
+                bannedReason: null
+            });
+            users.push({
+                id: "user2",
+                name: "TechTube",
+                url: "https://youtube.com/c/tech",
+                platform: "youtube",
+                status: "pending",
+                followTasks: ["user3","user4","user5","user6","user7"],
+                followedBy: [],
+                createdAt: Date.now()-200000,
+                bannedReason: null
+            });
+        }
+        saveAndRender();
+    }
+    
+    function saveAndRender() {
+        localStorage.setItem("real_follow_system", JSON.stringify(users));
+        renderStats();
+        renderActiveLinks();
+        renderBannedLinks();
+        renderMyTasks();
+    }
+    
+    // عرض الإحصائيات الحقيقية
+    function renderStats() {
+        const activeUsers = users.filter(u => u.status === 'active');
+        const bannedUsers = users.filter(u => u.status === 'banned');
+        let totalViews = activeUsers.reduce((acc, u) => acc + (u.followedBy?.length || 0), 0);
+        document.getElementById('totalMembers').innerText = activeUsers.length;
+        document.getElementById('totalViews').innerText = totalViews;
+        document.getElementById('bannedCount').innerText = bannedUsers.length;
+    }
+    
+    // عرض الروابط النشطة (التي يمكن متابعتها)
+    function renderActiveLinks() {
+        const active = users.filter(u => u.status === 'active');
+        if(active.length === 0) {
+            document.getElementById('activeLinksContainer').innerHTML = '<div class="user-card">لا توجد روابط نشطة حالياً</div>';
+            return;
+        }
+        let html = '';
+        active.forEach(u => {
+            html += `<div class="user-card">
+                        <strong>${u.name}</strong> (${u.platform})<br>
+                        <a href="${u.url}" target="_blank" style="color:#facc15;">${u.url.substring(0,50)}</a><br>
+                        <small>✅ متبوع من قبل: ${u.followedBy?.length || 0} شخص</small>
+                        <div class="verify-box">
+                            <button onclick="requestFollow('${u.id}')" style="background:#3b82f6;">➕ أتابع هذا الحساب (إثبات)</button>
+                        </div>
+                     </div>`;
+        });
+        document.getElementById('activeLinksContainer').innerHTML = html;
+    }
+    
+    // عرض الروابط المحظورة
+    function renderBannedLinks() {
+        const banned = users.filter(u => u.status === 'banned');
+        if(banned.length === 0) {
+            document.getElementById('bannedLinksContainer').innerHTML = '<div class="user-card">لا يوجد روابط محظورة</div>';
+            return;
+        }
+        let html = '';
+        banned.forEach(u => {
+            html += `<div class="user-card banned-card">
+                        <strong>${u.name}</strong> (${u.platform})<br>
+                        <span style="color:#f87171;">⛔ محظور بسبب: ${u.bannedReason || 'لم ينجز متابعاته المطلوبة'}</span>
+                     </div>`;
+        });
+        document.getElementById('bannedLinksContainer').innerHTML = html;
+    }
+    
+    // مهام المستخدم الحالي (افتراضيًا نستخدم أول مستخدم كمثال أو إنشاء مستخدم جديد)
+    function getCurrentUser() {
+        let current = localStorage.getItem("current_user_id");
+        if(!current) {
+            // أنشئ مستخدم وهمي للجلسة
+            const newId = "user_"+Date.now();
+            current = newId;
+            localStorage.setItem("current_user_id", current);
+            // أضف المستخدم إلى القائمة إن لم يكن موجوداً
+            if(!users.find(u=>u.id === current)) {
+                users.push({
+                    id: current,
+                    name: "زائر جديد",
+                    url: "",
+                    platform: "website",
+                    status: "pending",
+                    followTasks: [],
+                    followedBy: [],
+                    createdAt: Date.now(),
+                    bannedReason: null
+                });
+                saveAndRender();
+            }
+        }
+        let user = users.find(u=>u.id === current);
+        if(!user) {
+            user = { id: current, name:"زائر", url:"", platform:"website", status:"pending", followTasks:[], followedBy:[], createdAt:Date.now(), bannedReason:null };
+            users.push(user);
+            saveAndRender();
+        }
+        return user;
+    }
+    
+    // عرض المهام المطلوبة للمستخدم الحالي
+    function renderMyTasks() {
+        const me = getCurrentUser();
+        if(me.status === 'banned') {
+            document.getElementById('myTasksContainer').innerHTML = `<div class="user-card banned-card">🚫 حسابك محظور لأنك لم تنجز متابعاتك. لا يمكنك الظهور في القائمة النشطة.</div>`;
+            return;
+        }
+        if(me.followTasks.length === 0 && me.status === 'pending') {
+            // إذا كان pending وليس لديه مهام، أعطه 5 مهام عشوائية من المستخدمين النشطين
+            assignRandomTasks(me.id);
+            return;
+        }
+        if(me.followTasks.length === 0 && me.status === 'active') {
+            document.getElementById('myTasksContainer').innerHTML = `<div class="user-card">✨ أنت عضو نشط! الرابط الخاص بك يظهر للآخرين. قم بدعوة أصدقائك.</div>`;
+            return;
+        }
+        let taskList = me.followTasks;
+        let html = `<p>يجب عليك متابعة الحسابات التالية (${taskList.length} حساب) حتى يصبح رابطك نشطاً:</p>`;
+        taskList.forEach(targetId => {
+            const targetUser = users.find(u=>u.id === targetId);
+            if(targetUser) {
+                html += `<div class="user-card">
+                            <strong>${targetUser.name}</strong> (${targetUser.platform}) - <a href="${targetUser.url}" target="_blank">${targetUser.url}</a>
+                            <button onclick="markFollowDone('${targetId}')" style="background:#22c55e; margin-top:6px;">✅ أنجزت متابعة هذا الحساب</button>
+                         </div>`;
+            }
+        });
+        document.getElementById('myTasksContainer').innerHTML = html;
+    }
+    
+    // تعيين مهام عشوائية لمستخدم pending
+    function assignRandomTasks(userId) {
+        const user = users.find(u=>u.id === userId);
+        if(!user) return;
+        const activeUsers = users.filter(u => u.status === 'active' && u.id !== userId);
+        if(activeUsers.length < 5) {
+            // إذا لم يكن هناك 5 نشطاء، نضيف مستخدمين تجريبيين
+            user.followTasks = activeUsers.map(u=>u.id);
+            if(user.followTasks.length < 5) user.followTasks = [...user.followTasks, ...user.followTasks];
+            user.followTasks = user.followTasks.slice(0,5);
+        } else {
+            const shuffled = [...activeUsers];
+            for(let i=shuffled.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random()*(i+1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            user.followTasks = shuffled.slice(0,5).map(u=>u.id);
+        }
+        user.status = 'pending';
+        saveAndRender();
+    }
+    
+    // طلب متابعة (من مستخدم نشط إلى آخر)
+    window.requestFollow = function(targetUserId) {
+        const current = getCurrentUser();
+        if(current.status !== 'active') {
+            alert("لا يمكنك طلب متابعة الآخرين قبل أن تصبح عضوًا نشطًا (أكمل متابعة 5 حسابات أولاً)");
+            return;
+        }
+        const target = users.find(u=>u.id === targetUserId);
+        if(!target) return;
+        if(target.followedBy.includes(current.id)) {
+            alert("لقد قمت بالفعل بتسجيل متابعة لهذا الحساب");
+            return;
+        }
+        // محاكاة التحقق: نفتح الرابط في نافذة جديدة
+        window.open(target.url, "_blank");
+        let code = prompt("بعد أن تتابع الحساب حقيقياً، أدخل الرقم 1234 لتأكيد المتابعة:");
+        if(code === "1234") {
+            target.followedBy.push(current.id);
+            // زيادة المشاهدات
+            saveAndRender();
+            alert("✅ تم تسجيل متابعتك بنجاح! شكراً لدعم النظام العادل.");
+            // أيضا إضافة نقطة للمستخدم الحالي
+        } else {
+            alert("❌ الرمخطأ، لم يتم تسجيل المتابعة.");
+        }
+    };
+    
+    // إنجاز مهمة متابعة (للمستخدم الذي لديه مهام)
+    window.markFollowDone = function(targetId) {
+        const me = getCurrentUser();
+        if(me.status === 'banned') return alert("حسابك محظور لا يمكنك إكمال المهمة.");
+        // فتح رابط المستخدم المطلوب متابعته
+        const target = users.find(u=>u.id === targetId);
+        if(target) window.open(target.url, "_blank");
+        let verif = prompt("لتأكيد أنك تابعته حقيقياً، ادخل الرقم 1234:");
+        if(verif === "1234") {
+            // إزالة المهمة من قائمة المهام
+            me.followTasks = me.followTasks.filter(id => id !== targetId);
+            // إضافة أنه تمت متابعته
+            if(target && !target.followedBy.includes(me.id)) {
+                target.followedBy.push(me.id);
+            }
+            if(me.followTasks.length === 0 && me.status === 'pending') {
+                me.status = 'active';
+                alert("🎉 تهانينا! أصبح رابطك نشطاً وسيظهر للمستخدمين الآخرين.");
+            }
+            saveAndRender();
+        } else {
+            alert("لم يتم التأكيد، حاول مجدداً.");
+        }
+    };
+    
+    // إضافة رابط جديد
+    function addNewLink() {
+        const url = document.getElementById('userUrl').value.trim();
+        const name = document.getElementById('userName').value.trim();
+        const platform = document.getElementById('platformSelect').value;
+        if(!url) { alert("أدخل رابط صحيح"); return; }
+        const me = getCurrentUser();
+        if(me.url && me.url !== "") {
+            alert("لقد قمت بتسجيل رابط مسبقاً، يمكنك تعديله من خلال المطور.");
+            return;
+        }
+        me.name = name || "مستخدم";
+        me.url = url;
+        me.platform = platform;
+        me.status = "pending";
+        me.followTasks = [];
+        me.bannedReason = null;
+        me.createdAt = Date.now();
+        // تعيين مهام فورية
+        assignRandomTasks(me.id);
+        saveAndRender();
+        alert("تم تسجيل رابطك! ستظهر لك 5 حسابات يجب متابعتها خلال 10 دقائق (سيتم حظرك تلقائياً لو لم تفعل).");
+        // محاكاة حظر بعد 10 دقائق إذا لم ينجز
+        setTimeout(() => {
+            const updatedMe = users.find(u=>u.id === me.id);
+            if(updatedMe && updatedMe.status === 'pending' && updatedMe.followTasks.length > 0) {
+                updatedMe.status = 'banned';
+                updatedMe.bannedReason = "لم ينجز المتابعات المطلوبة خلال المهلة";
+                saveAndRender();
+                alert("⚠️ تم حظر رابطك بسبب عدم إنجاز المتابعات خلال 10 دقائق.");
+            }
+        }, 10 * 60 * 1000);
+    }
+    
+    document.getElementById('addLinkBtn')?.addEventListener('click', addNewLink);
+    document.getElementById('checkVerificationBtn')?.addEventListener('click', () => {
+        const me = getCurrentUser();
+        if(me.status === 'pending' && me.followTasks.length === 0) {
+            me.status = 'active';
+            saveAndRender();
+            alert("أصبحت الآن عضواً نشطاً!");
+        } else {
+            alert(`متبقي ${me.followTasks.length} متابعة ليصبح رابطك نشطاً.`);
+        }
+    });
+    
+    // PayPal وأزرار الدعم
+    document.getElementById('paypalBtn')?.addEventListener('click', ()=> window.open('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&business=nourddineabatal06@gmail.com', '_blank'));
+    document.getElementById('koFiBtn')?.addEventListener('click', ()=> window.open('https://ko-fi.com/nourddineabatal', '_blank'));
+    document.getElementById('whatsappBtn')?.addEventListener('click', ()=> window.open('https://wa.me/212711366556', '_blank'));
+    
+    // التبويبات واللغة
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+            document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+        });
+    });
+    
+    loadData();
+</script>
+</body>
+</html>
